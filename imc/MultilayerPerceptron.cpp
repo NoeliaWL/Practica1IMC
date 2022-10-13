@@ -129,7 +129,7 @@ void MultilayerPerceptron::restoreWeights() {
 // ------------------------------
 // Calculate and propagate the outputs of the neurons, from the first layer until the last one -->-->
 void MultilayerPerceptron::forwardPropagate() {
-	int net = 0;
+	double net = 0;
 	
 	for(int i=1; i<nOfLayers; i++){
 		for(int j=0; j<layers[i].nOfNeurons; j++){
@@ -147,7 +147,7 @@ void MultilayerPerceptron::forwardPropagate() {
 // Obtain the output error (MSE) of the out vector of the output layer wrt a target vector and return it
 double MultilayerPerceptron::obtainError(double* target) {
 	//Error cuadratico
-	int MSE = 0;
+	double MSE = 0;
 
 	for(int i=0; i<layers[nOfLayers].nOfNeurons; i++){
 		MSE += pow(layers[nOfLayers].neurons[i].out - target[i], 2);
@@ -164,7 +164,7 @@ void MultilayerPerceptron::backpropagateError(double* target) {
 		layers[nOfLayers].neurons[i].delta = -(target[i] - layers[nOfLayers].neurons[i].out) * layers[nOfLayers].neurons[i].out * (1 - layers[nOfLayers].neurons[i].out);
 	}
 
-	int sumDelta = 0;
+	double sumDelta = 0;
 
 	for(int h=nOfLayers-1; h>0; h--){
 		for(int j=0; j<layers[h].nOfNeurons; j++){
