@@ -149,8 +149,8 @@ double MultilayerPerceptron::obtainError(double* target) {
 	//Error cuadratico
 	double MSE = 0;
 
-	for(int i=0; i<layers[nOfLayers].nOfNeurons; i++){
-		MSE += pow(layers[nOfLayers].neurons[i].out - target[i], 2);
+	for(int i=0; i<layers[nOfLayers-1].nOfNeurons; i++){
+		MSE += pow(layers[nOfLayers-1].neurons[i].out - target[i], 2);
 	}
 
 	return MSE;
