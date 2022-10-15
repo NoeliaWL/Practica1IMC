@@ -101,11 +101,11 @@ int main(int argc, char **argv) {
 
         // Parameters of the mlp. For example, mlp.eta = value;
         if(eflag){
-            mlp.eta = atoi(evalue);
+            mlp.eta = atof(evalue);
         }
 
         if(mflag){
-            mlp.mu = atoi(mvalue);
+            mlp.mu = atof(mvalue);
         }
         
     	int iterations = -1;
@@ -176,10 +176,10 @@ int main(int argc, char **argv) {
         averageTrainError /= 5;
         averageTestError /= 5;
 
-        double varianzaTrain = 0, varianzaTest = 0;
+        double varianzaTrain = 0.0, varianzaTest = 0.0;
 
         for(int i=0; i<5; i++){
-            double rangoTrain, rangoTest;
+            double rangoTrain = 0.0, rangoTest = 0.0;
             rangoTrain = pow(trainErrors[i] - averageTrainError, 2);
             rangoTest = pow(testErrors[i] - averageTestError, 2);
             varianzaTrain = varianzaTrain + rangoTrain;

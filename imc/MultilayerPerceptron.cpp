@@ -129,16 +129,16 @@ void MultilayerPerceptron::restoreWeights() {
 // ------------------------------
 // Calculate and propagate the outputs of the neurons, from the first layer until the last one -->-->
 void MultilayerPerceptron::forwardPropagate() {
-	double net = 0;
+	double net = 0.0;
 	
 	for(int i=1; i<nOfLayers; i++){
 		for(int j=0; j<layers[i].nOfNeurons; j++){
-			net = 0;
+			net = 0.0;
 			for(int k=0; k<layers[i-1].nOfNeurons; k++){
 				net += layers[i].neurons[j].w[k+1] * layers[i-1].neurons[k].out;
 			}
 			net += layers[i].neurons[j].w[0];
-			layers[i].neurons[j].out = 1/(1+exp(-net));
+			layers[i].neurons[j].out = 1.0/(1+exp(-net));
 		}
 	}
 }
@@ -147,11 +147,13 @@ void MultilayerPerceptron::forwardPropagate() {
 // Obtain the output error (MSE) of the out vector of the output layer wrt a target vector and return it
 double MultilayerPerceptron::obtainError(double* target) {
 	//Error cuadratico
-	double MSE = 0;
+	double MSE = 0.0;
 
 	for(int i=0; i<layers[nOfLayers-1].nOfNeurons; i++){
 		MSE += pow(layers[nOfLayers-1].neurons[i].out - target[i], 2);
 	}
+
+	MSE /= layers[nOfLayers-1].nOfNeurons;
 
 	return MSE;
 }
@@ -160,15 +162,15 @@ double MultilayerPerceptron::obtainError(double* target) {
 // ------------------------------
 // Backpropagate the output error wrt a vector passed as an argument, from the last layer to the first one <--<--
 void MultilayerPerceptron::backpropagateError(double* target) {
-	for(int i=0; i<layers[nOfLayers].nOfNeurons; i++){
-		layers[nOfLayers].neurons[i].delta = -(target[i] - layers[nOfLayers].neurons[i].out) * layers[nOfLayers].neurons[i].out * (1 - layers[nOfLayers].neurons[i].out);
+	for(int i=0; i<layers[nOfLayers-1].nOfNeurons; i++){
+		layers[nOfLayers-1].neurons[i].delta = -(target[i] - layers[nOfLayers-1].neurons[i].out) * layers[nOfLayers-1].neurons[i].out * (1 - layers[nOfLayers-1].neurons[i].out);
 	}
 
-	double sumDelta = 0;
+	double sumDelta = 0.0;
 
-	for(int h=nOfLayers-1; h>0; h--){
+	for(int h=nOfLayers-2; h>0; h--){
 		for(int j=0; j<layers[h].nOfNeurons; j++){
-			sumDelta = 0;
+			sumDelta = 0.0;
 			for(int i=0; i<layers[h+1].nOfNeurons; i++){
 				sumDelta += layers[h+1].neurons[i].w[j+1] * layers[h+1].neurons[i].delta;
 			}
@@ -312,6 +314,7 @@ void MultilayerPerceptron::runOnlineBackPropagation(Dataset * trainDataset, Data
 
 	// Random assignment of weights (starting point)
 	randomWeights();
+	printNetwork();
 
 	double minTrainError = 0;
 	int iterWithoutImproving;
