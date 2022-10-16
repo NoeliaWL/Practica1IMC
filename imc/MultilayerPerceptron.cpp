@@ -185,8 +185,8 @@ void MultilayerPerceptron::backpropagateError(double* target) {
 void MultilayerPerceptron::accumulateChange() {
 	for(int h=1; h<nOfLayers; h++){
 		for(int j=0; j<layers[h].nOfNeurons; j++){
-			for(int i=0; i<layers[h-1].nOfNeurons; i++){
-				layers[h].neurons[j].deltaW[i] = layers[h].neurons[j].deltaW[i] + layers[h].neurons[j].delta * layers[h-1].neurons[i].out;
+			for(int i=1; i<layers[h-1].nOfNeurons+1; i++){
+				layers[h].neurons[j].deltaW[i] = layers[h].neurons[j].deltaW[i] + layers[h].neurons[j].delta * layers[h-1].neurons[i-1].out;
 			}
 			layers[h].neurons[j].deltaW[0] = layers[h].neurons[j].deltaW[0] + layers[h].neurons[j].delta;
 		}
@@ -199,7 +199,7 @@ void MultilayerPerceptron::accumulateChange() {
 void MultilayerPerceptron::accumulateChangeRestore(){
 	for(int h=1; h<nOfLayers; h++){
 		for(int j=0; j<layers[h].nOfNeurons; j++){
-			for(int i=0; i<layers[h-1].nOfNeurons; i++){
+			for(int i=1; i<layers[h-1].nOfNeurons+1; i++){
 				layers[h].neurons[j].lastDeltaW[i] = layers[h].neurons[j].deltaW[i];
 				layers[h].neurons[j].deltaW[i] = 0;
 			}
@@ -214,7 +214,7 @@ void MultilayerPerceptron::accumulateChangeRestore(){
 void MultilayerPerceptron::weightAdjustment() {
 	for(int h=1; h<nOfLayers; h++){
 		for(int j=0; j<layers[h].nOfNeurons; j++){
-			for(int i=0; i<layers[h-1].nOfNeurons; i++){
+			for(int i=1; i<layers[h-1].nOfNeurons+1; i++){
 				layers[h].neurons[j].w[i] = layers[h].neurons[j].w[i] - eta * layers[h].neurons[j].deltaW[i] - mu * (eta * layers[h].neurons[j].lastDeltaW[i]);
 			}
 			layers[h].neurons[j].w[0] = layers[h].neurons[j].w[0] - eta * layers[h].neurons[j].deltaW[0] - mu * (eta * layers[h].neurons[j].lastDeltaW[0]);
@@ -308,7 +308,7 @@ void MultilayerPerceptron::predict(Dataset* pDatosTest)
 // Run the traning algorithm for a given number of epochs, using trainDataset
 // Once finished, check the performance of the network in testDataset
 // Both training and test MSEs should be obtained and stored in errorTrain and errorTest
-void MultilayerPerceptron::runOnlineBackPropagation(Dataset * trainDataset, Dataset * pDatosTest, int maxiter, double *errorTrain, double *errorTest)
+void MultilayerPerceptron::runOnlineBackPropagation(Dataset * trainDataset, Dataset * pDatosTest, int maxiter, double *errorTrain, double *errorTest, string name)
 {
 	int countTrain = 0;
 
@@ -319,6 +319,8 @@ void MultilayerPerceptron::runOnlineBackPropagation(Dataset * trainDataset, Data
 	double minTrainError = 0;
 	int iterWithoutImproving;
 	double testError = 0;
+
+	ofstream f(name);
 
 	// Learning
 	do {
@@ -346,6 +348,8 @@ void MultilayerPerceptron::runOnlineBackPropagation(Dataset * trainDataset, Data
 
 		cout << "Iteration " << countTrain << "\t Training error: " << trainError << endl;
 
+		f << countTrain << "\t" << trainError << "\t" << testError <<std::endl;
+
 	} while ( countTrain<maxiter );
 
 	cout << "NETWORK WEIGHTS" << endl;
@@ -372,6 +376,7 @@ void MultilayerPerceptron::runOnlineBackPropagation(Dataset * trainDataset, Data
 	*errorTest=testError;
 	*errorTrain=minTrainError;
 
+	f.close();
 }
 
 // Optional Kaggle: Save the model weights in a textfile

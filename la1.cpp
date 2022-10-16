@@ -14,6 +14,7 @@
 #include <cstdlib>  // To establish the seed srand() and generate pseudorandom numbers rand()
 #include <string.h>
 #include <math.h>
+#include <sstream>
 
 #include "imc/MultilayerPerceptron.h"
 #include "imc/util.h"
@@ -120,6 +121,15 @@ int main(int argc, char **argv) {
     	Dataset * trainDataset = readData(tvalue);
     	Dataset * testDataset = readData(Tvalue);
 
+        //Normalizar datos si es necesario
+        if(sflag){
+            minMaxScalerDataSetInputs(trainDataset, -1.0, 1.0, minDatasetInputs(trainDataset), maxDatasetInputs(trainDataset));
+            minMaxScalerDataSetOutputs(trainDataset, 0.0, 1.0, minDatasetOutputs(trainDataset), maxDatasetOutputs(trainDataset));
+
+            minMaxScalerDataSetInputs(testDataset, -1.0, 1.0, minDatasetInputs(trainDataset), maxDatasetInputs(trainDataset));
+            minMaxScalerDataSetOutputs(testDataset, 0.0, 1.0, minDatasetOutputs(trainDataset), maxDatasetOutputs(trainDataset));
+        }
+
         // Initialize topology vector
     	int layers=-1;
         if(lflag){
@@ -147,12 +157,16 @@ int main(int argc, char **argv) {
         double *testErrors = new double[5];
         double *trainErrors = new double[5];
         double bestTestError = 1;
+        string name;
         for(int i=0; i<5; i++){
             cout << "**********" << endl;
             cout << "SEED " << seeds[i] << endl;
             cout << "**********" << endl;
             srand(seeds[i]);
-            mlp.runOnlineBackPropagation(trainDataset,testDataset,iterations,&(trainErrors[i]),&(testErrors[i]));
+            ostringstream auxName;
+            auxName << "seed_" << i << ".txt";
+            name = auxName.str();
+            mlp.runOnlineBackPropagation(trainDataset,testDataset,iterations,&(trainErrors[i]),&(testErrors[i]), name);
             cout << "We end!! => Final test error: " << testErrors[i] << endl;
 
             // We save the weights every time we find a better model
