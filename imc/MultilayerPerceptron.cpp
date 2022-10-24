@@ -348,7 +348,7 @@ void MultilayerPerceptron::runOnlineBackPropagation(Dataset * trainDataset, Data
 
 		cout << "Iteration " << countTrain << "\t Training error: " << trainError << endl;
 
-		f << countTrain << "\t" << trainError << "\t" << testError <<std::endl;
+		f << countTrain << "\t" << trainError <<std::endl;
 
 	} while ( countTrain<maxiter );
 
@@ -375,6 +375,8 @@ void MultilayerPerceptron::runOnlineBackPropagation(Dataset * trainDataset, Data
 	testError = test(pDatosTest);
 	*errorTest=testError;
 	*errorTrain=minTrainError;
+
+	f << testError << std::endl;
 
 	f.close();
 }
